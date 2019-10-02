@@ -1,15 +1,18 @@
 <template>
     <v-timeline align-top dense>
-        <v-timeline-item>
+        <v-timeline-item large fill-dot="">
             <v-card>
-                <v-card-title><span>{{ title }}</span></v-card-title>
+                <v-card-title><span>{{ title }}</span><v-spacer></v-spacer><v-btn
+                            depressed
+                            @click="delevents(id)"
+                            >
+                            clear
+                            </v-btn></v-card-title>
                 <v-expansion-panels>
                     <v-expansion-panel>
                         <v-expansion-panel-header v-slot="{open}">
                             <v-row no-gutters>
-                                <v-col>edit</v-col>
                                 <v-col cols="8" class="text--secondary">
-                                    <v-fade-transistion leave-absolute>
                                         <span
                                         v-if="open"
                                         key="0"
@@ -21,23 +24,17 @@
                                         >
                                         {{events[id].msg}}
                                         </span>
-                                    </v-fade-transistion>
                                 </v-col>
                             </v-row>
                         </v-expansion-panel-header>
                         <v-expansion-panel-content>
                             <v-text-field
+                            placeholder="Type event and press enter!"
                             v-model="input"
                             flat
                             hide-details=""
                             @keydown.enter="comment(id)"
                             ></v-text-field>
-                            <v-btn
-                            depressed
-                            @click="comment(id)"
-                            >
-                            save
-                            </v-btn>
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
@@ -52,6 +49,11 @@ export default {
 
     data: () => ({
      events: [
+      {
+        id: 0,
+        msg:'',
+        clr: null,
+      },
       {
         id: 1,
         msg:'',
@@ -287,13 +289,9 @@ export default {
         msg:'',
         clr: null,
       },
-      {
-        id: 48,
-        msg:'',
-        clr: null,
-      },
-        ],
+    ],
         input: null,
+        deep: true,
     }),
 
     mounted () {
@@ -307,38 +305,43 @@ export default {
     },
 
     methods: {
+      
     
     comment(n) {
 
         if (!this.input) {
-        return;
+         return;
         }
 
         localStorage.setItem('events', JSON.stringify(this.events));
 
         var change = JSON.parse(localStorage.getItem('events'));
         
-        /*change[n].msg = this.input;
-        change[n].id = this.id;*/
-        change.splice(n, 0,{
-            msg: this.input,
+        change[n].msg = this.input;
+        change[n].id = this.id;
+       /* change.splice(n, 0,{
             id: this.id,
-        });
+            msg: this.input,
+        });*/
 
         localStorage.setItem('events', JSON.stringify(change));
 
         this.input = null;
-    },
-    
-    saveevents() {
-      const parsed = JSON.stringify(this.events);
-      localStorage.setItem('events', parsed);
+        location.reload(true);
+        
     },
 
-    delevents(x) {
-      this.events.splice(x, 1);
-      this.saveevents();
-    },
+      delevents(x) {
+        localStorage.setItem('events', JSON.stringify(this.events));
+
+        var change = JSON.parse(localStorage.getItem('events'));
+        
+        change[x].msg = '';
+        change[x].id = this.id;
+
+        localStorage.setItem('events', JSON.stringify(change));
+        location.reload(true);
+      },
 
     
 
